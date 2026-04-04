@@ -39,7 +39,6 @@ func personaCreation() Persona {
 
 	randomIndex := rand.Intn(len(personas))
     
-    // THIS IS THE FIX: Return the item at the index
 	return personas[randomIndex] 
 }
 
