@@ -1,4 +1,4 @@
-package main
+package engine
 
 import (
 	"math/rand"
@@ -40,9 +40,4 @@ func personaCreation() Persona {
 	randomIndex := rand.Intn(len(personas))
     
 	return personas[randomIndex] 
-}
-
-func main() {
-	p := personaCreation()
-	println("Success! Picked identity:", p.UserAgent)
 }

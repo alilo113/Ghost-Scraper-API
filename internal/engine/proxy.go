@@ -13,7 +13,6 @@ type Proxy struct {
 }
 
 func GetRandomProxy() Proxy {
-	// In a real app, you'd load this from a JSON file or Environment Variables
 	var proxies = []Proxy{
 		{
 			Address:  "123.45.67.89:8080",
