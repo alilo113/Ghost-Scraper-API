@@ -38,3 +38,30 @@ func BrowserBotEvation() (*rod.Page, func()) {
 
 	return page, cleanup
 }
+
+// we gonna take the url and the data from the req
+type ScrapeRequest struct {
+    URL      string `json:"url"`      // The website to visit
+    Selector string `json:"selector"` // The CSS selector (e.g., ".price" or "h1")
+}
+
+func scrapeData(targetUrl string, selector string) (string, error) {
+    page, cleanup := BrowserBotEvation()
+    defer cleanup()
+
+    err := page.Navigate(targetUrl)
+    if err != nil {
+        return "", err
+    }
+    
+    page.MustWaitLoad()
+
+    el, err := page.Element(selector)
+    if err != nil {
+        return "", fmt.Errorf("selector not found: %s", selector)
+    }
+
+    result := el.MustText()
+
+    return result, nil
+}
