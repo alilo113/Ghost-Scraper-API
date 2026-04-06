@@ -2,18 +2,20 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"encoding/json"
 	"Ghost-Scraper-API/internal/engine"
 )
 
+
+func scrapingHandler(w http.ResponseWriter, r *http.Request){
+	w.header().set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(engine.scrapeData())
+}
+
 func main() {
-	fmt.Println("👻 Starting the Ghost Engine...")
+	http.HadleFunc("POST /Srape-Data", scrapingHandler)
 
-	page, cleanup := engine.BrowserBotEvation()
-	
-	defer cleanup()
-
-	fmt.Println("🕵️ Testing stealth on 'sannysoft'...")
-	page.MustNavigate("https://bot.sannysoft.com")
-
-	fmt.Println("✅ Success! The Ghost is live.")
+	fmt.Println("Server is runing...")
+	http.ListenAndServe(":8080", nil)
 }
