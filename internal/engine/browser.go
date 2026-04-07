@@ -1,6 +1,8 @@
 package engine
 
 import (
+	"fmt"
+
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto" // Add this for the UserAgent type
@@ -45,7 +47,7 @@ type ScrapeRequest struct {
     Selector string `json:"selector"` // The CSS selector (e.g., ".price" or "h1")
 }
 
-func scrapeData(targetUrl string, selector string) (string, error) {
+func ScrapeData(targetUrl string, selector string) (string, error) {
     page, cleanup := BrowserBotEvation()
     defer cleanup()
 
