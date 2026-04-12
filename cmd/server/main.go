@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"Ghost-Scraper-API/internal/engine"
 )
 
@@ -35,6 +36,17 @@ func scrapingHandler(w http.ResponseWriter, r *http.Request) {
 
 	// D. Send back the success result
 	json.NewEncoder(w).Encode(map[string]string{"data": result})
+}
+
+
+type GhostWorker struct {
+	ID int
+	ActiveWorker int
+}
+
+type LoadBalancer struct {
+	mu      sync.Mutex
+	Workers []*GhostWorker
 }
 
 func main() {
