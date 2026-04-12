@@ -25,7 +25,7 @@ func scrapingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// C. Call your engine function with the data from the request
+	// C. Call engine function with the data from the request
 	result, err := engine.ScrapeData(req.URL, req.Selector)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -38,9 +38,6 @@ func scrapingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Note: HandleFunc (Capital 'H')
-	// If you are using Go 1.22+, "POST /Scrape-Data" works. 
-	// If older, just use "/Scrape-Data" and check r.Method inside the handler.
 	http.HandleFunc("/Scrape-Data", scrapingHandler)
 
 	fmt.Println("🚀 Ghost-Scraper is running on http://localhost:8080")
