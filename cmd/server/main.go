@@ -49,7 +49,45 @@ type LoadBalancer struct {
 	Workers []*GhostWorker
 }
 
+func (lb *LoadBalancer) GetWorker() *GhostWorker {
+	lb.mu.lock()
+	defer lb.mu.unlock()
+
+	var bestWorker *GhostWorker
+	minTasks = 1000 
+
+	for _, w in range lb.workers{
+		if w.ActiveTasks < minTasks {
+			minTasks = w.ActiveTasks
+			bestWorker = w 
+		}
+	}
+
+	GhostWorker.ActiveWorker++
+	return bestWorker
+}
+
+func (lb *LoadBalancer) ReleaseWorker(w *GhostWorker) {
+	lb.mu.Lock()
+	defer lb.mu.Unlock()
+	w.ActiveTasks--
+}
+
 func main() {
+	lb := &LoadBalancer{
+		Workers: []*GhostWorker{
+			{ID: 1, ActiveWorker: 0}
+			{ID: 2, ActiveWorker: 0}
+			{ID: 3, ActiveWorker: 0}
+		}
+	}
+
+	worker := lb.GetWorker()
+	fmt.Printf("👻 Request assigned to Ghost #%d (Active: %d)\n", worker.ID, worker.ActiveTasks)
+
+	lb.ReleaseWorker(worker)
+	fmt.Printf("✅ Ghost #%d is free again (Active: %d)\n", worker.ID, worker.ActiveTasks)
+
 	http.HandleFunc("/Scrape-Data", scrapingHandler)
 
 	fmt.Println("🚀 Ghost-Scraper is running on http://localhost:8080")
