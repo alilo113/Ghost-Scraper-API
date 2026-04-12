@@ -5,43 +5,18 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
-	"Ghost-Scraper-API/internal/engine"
+	// Ensure this path matches your go.mod folder structure
+	"Ghost-Scraper-API/internal/engine" 
 )
 
-// 1. Define what the user SHOULD send us
 type ScrapeRequest struct {
 	URL      string `json:"url"`
 	Selector string `json:"selector"`
 }
 
-func scrapingHandler(w http.ResponseWriter, r *http.Request) {
-	// A. Set the response header (Capital 'H' and 'S')
-	w.Header().Set("Content-Type", "application/json")
-
-	// B. Read the JSON sent by the user
-	var req ScrapeRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
-		return
-	}
-
-	// C. Call engine function with the data from the request
-	result, err := engine.ScrapeData(req.URL, req.Selector)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
-		return
-	}
-
-	// D. Send back the success result
-	json.NewEncoder(w).Encode(map[string]string{"data": result})
-}
-
-
 type GhostWorker struct {
-	ID int
-	ActiveWorker int
+	ID          int
+	ActiveTasks int // Changed to ActiveTasks to match your logic below
 }
 
 type LoadBalancer struct {
@@ -50,20 +25,25 @@ type LoadBalancer struct {
 }
 
 func (lb *LoadBalancer) GetWorker() *GhostWorker {
-	lb.mu.lock()
-	defer lb.mu.unlock()
+	// 1. Fixed capitalization: Lock() and Unlock() must be Capitalized
+	lb.mu.Lock()
+	defer lb.mu.Unlock()
 
 	var bestWorker *GhostWorker
-	minTasks = 1000 
+	minTasks := 1000 // 2. Added ':' for short variable declaration
 
-	for _, w in range lb.workers{
+	// 3. Fixed 'range' syntax: for index, value := range slice
+	for _, w := range lb.Workers { 
 		if w.ActiveTasks < minTasks {
 			minTasks = w.ActiveTasks
-			bestWorker = w 
+			bestWorker = w
 		}
 	}
 
-	GhostWorker.ActiveWorker++
+	// 4. Update the actual worker found, not the Type name
+	if bestWorker != nil {
+		bestWorker.ActiveTasks++
+	}
 	return bestWorker
 }
 
@@ -73,20 +53,40 @@ func (lb *LoadBalancer) ReleaseWorker(w *GhostWorker) {
 	w.ActiveTasks--
 }
 
-func main() {
-	lb := &LoadBalancer{
-		Workers: []*GhostWorker{
-			{ID: 1, ActiveWorker: 0}
-			{ID: 2, ActiveWorker: 0}
-			{ID: 3, ActiveWorker: 0}
-		}
+func scrapingHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req ScrapeRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
+		return
 	}
 
-	worker := lb.GetWorker()
-	fmt.Printf("👻 Request assigned to Ghost #%d (Active: %d)\n", worker.ID, worker.ActiveTasks)
+	result, err := engine.ScrapeData(req.URL, req.Selector)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
 
-	lb.ReleaseWorker(worker)
-	fmt.Printf("✅ Ghost #%d is free again (Active: %d)\n", worker.ID, worker.ActiveTasks)
+	json.NewEncoder(w).Encode(map[string]string{"data": result})
+}
+
+func main() {
+	// 5. Fixed missing commas in the slice literal
+	lb := &LoadBalancer{
+		Workers: []*GhostWorker{
+			{ID: 1, ActiveTasks: 0},
+			{ID: 2, ActiveTasks: 0},
+			{ID: 3, ActiveTasks: 0},
+		},
+	}
+
+	// Just a test print to show it works
+	testWorker := lb.GetWorker()
+	fmt.Printf("👻 Test: Assigned Ghost #%d (Active: %d)\n", testWorker.ID, testWorker.ActiveTasks)
+	lb.ReleaseWorker(testWorker)
 
 	http.HandleFunc("/Scrape-Data", scrapingHandler)
 
