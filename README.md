@@ -32,4 +32,18 @@ cd Ghost-Scraper-API
 go mod tidy
 
 ```
-##
+## 🚦 Usage
+1. **Start the server:**
+   ```bash
+   go run main.go
+   ```
+2. **Send a Scrape Request:**
+   ```bash
+   curl -X POST http://localhost:8080/Scrape-Data \\
+   ```
+## 🔐 Security & Reliability
+This project implements core networking and security principles similar to those found in professional Master's level curriculum:
+ - Thread Safety: Guaranteed by atomic-like operations on shared resources.
+ - Resource Pooling: Limits browser overhead to prevent system crashes.
+## 📜 License
+Distributed under the MIT License.
